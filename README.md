@@ -1,3 +1,7 @@
+Here you'll find the code of an abandoned project. Not really documented, not really tested neither ; but better here than in a trash.
+---------------------
+
+
 TODO
 ---------------------
 
