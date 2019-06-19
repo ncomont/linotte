@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package search;
+
+service Search {
+	rpc Search (SearchRequest) returns (SearchReply) {}
+}
+
+
+message SearchRequest {
+	int32 limit = 1;
+	int32 offset = 2;
+	string term = 3;
+	bool reference = 4;
+	repeated string ranks = 5;
+	repeated uint32 ids = 6;
+}
+
+message SearchReply {
+	repeated uint32 results = 1;
+	int64 total = 2;
+}

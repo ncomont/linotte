@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package job;
+
+import "google/protobuf/timestamp.proto";
+
+service Job {
+    rpc AllJobs (JobsRequest) returns (JobsReply) {}
+    rpc JobByID (JobRequest) returns (JobReply) {}
+
+	rpc ReportByID (ReportRequest) returns (ReportReply) {}
+	rpc ReportsByJobID (JobRequest) returns (ReportsReply) {}
+    rpc SaveReport (ReportRequest) returns (ReportReply) {}
+    rpc ReportStatisticsByReportID(ReportRequest) returns (ReportStatisticsReply) {}
+
+    rpc ResultsByState (ResultRequest) returns (ResultsReply) {}
+    rpc ResultsByStateAndReportID (ResultRequest) returns (ResultsReply) {}
+
+    rpc UpdateJob (JobRequest) returns (JobReply) {}
+
+	rpc ResolveConflict (ResultRequest) returns (ResultReply) {}
+}
+
+message JobRequest {
+    uint32 id = 1;
+    string status = 2;
+}
+
+message JobsRequest {
+    repeated uint32 ids = 1;
+}
+
+message JobsReply {
+    repeated JobReply jobs = 1;
+}
+
+message JobReply {
+    uint32 id = 1;
+    string name = 2;
+    string file = 3;
+    google.protobuf.Timestamp last_update = 4;
+    string status = 5;
+    string type = 6;
+    string data = 7;
+    repeated ReportReply reports = 8;
+}
+
+message ReportRequest {
+    uint32 id = 1;
+    uint32 job_id = 2;
+    string message = 3;
+    string status = 4;
+    repeated ResultReply results = 5;
+}
+
+message ReportReply {
+    uint32 id = 1;
+    google.protobuf.Timestamp creation_date = 2;
+    string message = 3;
+    string status = 5;
+    uint32 job_id = 6;
+    // TODO: add ResultsReply
+}
+
+message ReportsReply {
+    repeated ReportReply reports = 1;
+}
+
+message ReportStatisticsReply {
+    uint32 resolved_count = 1;
+    uint32 not_found_count = 2;
+    uint32 found_count = 3;
+}
+
+
+message ResultRequest {
+    uint32 id = 1;
+	string state = 2;
+	uint32 taxon_id = 3;
+    uint32 report_id = 4;
+}
+
+message ResultReply {
+    uint32 id = 1;
+    string search_data = 2;
+    string value = 3;
+    uint32 report_id = 4;
+    uint32 taxon_id = 5;
+    string state = 6;
+}
+
+message ResultsReply {
+    repeated ResultReply results = 1;
+}

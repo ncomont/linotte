@@ -1,0 +1,1 @@
+mysql -uroot -pl1n0tt3passwd linotte;

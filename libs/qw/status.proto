@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package qw;
+
+message status {
+    uint32 job_id = 1;
+    uint32 progress = 2;
+    string error = 3;
+}

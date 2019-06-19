@@ -1,0 +1,73 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: linotte-db
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/db/data:/var/lib/mysql
+      - ./volumes/db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    environment:
+      MYSQL_USER: linotte
+      MYSQL_PASSWORD: l1n0tt3passwd
+      MYSQL_ROOT_PASSWORD: l1n0tt3passwd
+      MYSQL_DATABASE: linotte
+    networks:
+      - linotte-network
+
+  elastic:
+    image: elasticsearch:5.2.2
+    container_name: linotte-es
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/elastic/data:/usr/share/elasticsearch/data
+    networks:
+      - linotte-network
+
+  api:
+    image: ubuntu:16.04
+    container_name: linotte-api
+    restart: unless-stopped
+    volumes:
+      - ./volumes/common:/volume:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - DB_USER=linotte
+      - DB_PASSWORD=l1n0tt3passwd
+      - DB_DBNAME=linotte
+      - VIRTUAL_HOST=api.linotte.hvcn.nicolasc.eu
+    depends_on:
+      - db
+    command: ./volume/linotte api -endpoint :80
+    ports:
+      - "10000:80"
+    networks:
+      - linotte-network
+      - nginx-proxy
+
+  backoffice:
+    image: nginx:mainline
+    container_name: linotte-bo
+    restart: unless-stopped
+    volumes:
+        - ./volumes/backoffice:/usr/share/nginx/html:ro
+        - /etc/localtime:/etc/localtime:ro
+    environment:
+      - VIRTUAL_HOST=bo.linotte.hvcn.nicolasc.eu
+    depends_on:
+      - api
+    networks:
+      - linotte-network
+      - nginx-proxy
+
+
+networks:
+    linotte-network:
+        external:
+            name: linotte-network
+    nginx-proxy:
+        external:
+            name: nginx-proxy

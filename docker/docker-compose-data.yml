@@ -1,0 +1,38 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: linotte-db
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/db/data:/var/lib/mysql
+      - ./volumes/db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    environment:
+      MYSQL_USER: linotte
+      MYSQL_PASSWORD: l1n0tt3passwd
+      MYSQL_ROOT_PASSWORD: l1n0tt3passwd
+      MYSQL_DATABASE: linotte
+    ports:
+      - "3306:3306"
+
+  elastic:
+    image: elasticsearch:5.2.2
+    container_name: linotte-elasticsearch
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/elastic/data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+  rabbitmq:
+    image: rabbitmq:3.6-management
+    container_name: linotte-rabbitmq
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "15672:15672"
+      - "5672:5672"

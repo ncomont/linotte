@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package job;
+
+service Protection {
+    // rpc AllJobs (JobsRequest) returns (JobsReply) {}
+    // rpc JobByID (JobRequest) returns (JobReply) {}
+
+	// rpc ReportByID (ReportRequest) returns (ReportReply) {}
+	// rpc ReportsByJobID (JobRequest) returns (ReportsReply) {}
+    // rpc SaveReport (ReportRequest) returns (ReportReply) {}
+
+    // rpc ResultsByState (ResultRequest) returns (ResultsReply) {}
+    // rpc ResultsByStateAndReportID (ResultRequest) returns (ResultsReply) {}
+
+    // rpc UpdateJob (JobRequest) returns (JobReply) {}
+
+	// rpc ResolveConflict (ResultRequest) returns (ResultReply) {}
+}
+
+message ProtectionRequest {}
+
+message ProtectionsReply {}
+
+message ProtectionReply {}

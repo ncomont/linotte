@@ -1,0 +1,13 @@
+#!/bin/bash
+
+export LINOTTE_USER_SERVICE_ENDPOINT=":50054"
+export LINOTTE_USER_DATABASE_HOST="localhost"
+export LINOTTE_USER_DATABASE_USER="linotte"
+export LINOTTE_USER_DATABASE_PASSWORD="l1n0tt3passwd"
+export LINOTTE_USER_DATABASE_NAME="linotte"
+export LINOTTE_USER_DATABASE_PORT=3306
+export LINOTTE_USER_DATABASE_VERBOSE_MODE="false"
+export LINOTTE_USER_PUBLIC_KEY_PATH="app.rsa.pub"
+export LINOTTE_USER_PRIVATE_KEY_PATH="app.rsa"
+
+make && go build && ./user

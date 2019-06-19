@@ -1,0 +1,124 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: linotte-db
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/db/data:/var/lib/mysql
+      - ./volumes/db/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    environment:
+      MYSQL_USER: linotte
+      MYSQL_PASSWORD: l1n0tt3passwd
+      MYSQL_ROOT_PASSWORD: l1n0tt3passwd
+      MYSQL_DATABASE: linotte
+
+  elastic:
+    image: elasticsearch:5.2.2
+    container_name: linotte-es
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/elastic/data:/usr/share/elasticsearch/data
+
+  rabbitmq:
+    image: rabbitmq:3.6-management
+    container_name: linotte-rabbitmq
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "15672:15672"
+
+  api:
+    build: ./api
+    container_name: linotte-api
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      LINOTTE_API_SERVICE_ENDPOINT: "api:10000"
+      LINOTTE_TAXREF_SERVICE_ENDPOINT: "taxref:50052"
+      LINOTTE_JOB_SERVICE_ENDPOINT: "job:50053"
+      LINOTTE_USER_SERVICE_ENDPOINT: "user:50054"
+      LINOTTE_SEARCH_SERVICE_ENDPOINT: "search:50055"
+      LINOTTE_PROTECTION_SERVICE_ENDPOINT: "protection:50056"
+    depends_on:
+      - db
+    ports:
+      - "10000:10000"
+
+  user:
+    build: ./user
+    container_name: linotte-user
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      LINOTTE_USER_SERVICE_ENDPOINT: ":50054"
+      LINOTTE_USER_DATABASE_HOST: "db"
+    depends_on:
+      - db
+
+  search:
+    build: ./search
+    container_name: linotte-search
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      LINOTTE_SEARCH_SERVICE_ENDPOINT: ":50055"
+      LINOTTE_SEARCH_ELASTIC_HOST: "elastic"
+    depends_on:
+      - db
+
+  taxref:
+    build: ./taxref
+    container_name: linotte-taxref
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      LINOTTE_TAXREF_SERVICE_ENDPOINT: ":50052"
+      LINOTTE_TAXREF_DATABASE_HOST: "db"
+    depends_on:
+      - db
+
+  job:
+    build: ./job
+    container_name: linotte-job
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      LINOTTE_JOB_SERVICE_ENDPOINT: ":50053"
+      LINOTTE_JOB_DATABASE_HOST: "db"
+      LINOTTE_JOB_RABBIT_ENDPOINT: "amqp://guest:guest@rabbitmq:5672/"
+    depends_on:
+      - rabbitmq
+      - db
+
+  backoffice:
+    build: ./backoffice
+    container_name: linotte-bo
+    restart: unless-stopped
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "80:80"
+
+  runner:
+    build: ./runner
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./volumes/ingest:/storage
+    environment:
+      LINOTTE_JOB_RUNNER_RABBIT_ENDPOINT: "amqp://guest:guest@rabbitmq:5672/"
+      LINOTTE_JOB_RUNNER_TAXREF_SERVICE_ENDPOINT: "taxref:50052"
+      LINOTTE_JOB_RUNNER_STORAGE_PATH: "/storage"
+    depends_on:
+      - rabbitmq
+      - taxref

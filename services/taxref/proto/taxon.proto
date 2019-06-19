@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package taxref;
+
+service Taxref {
+	rpc TaxonByID (TaxonRequest) returns (TaxonReply) {}
+	rpc TaxonsByIDs (TaxonsRequest) returns (TaxonsReply) {}
+	rpc ReferenceByID (TaxonRequest) returns (TaxonReply) {}
+	rpc ReferenceAndSynonymsForTaxonID (TaxonRequest) returns (TaxonsReply) {}
+    rpc TaxonClassificationForID (TaxonClassificationRequest) returns (TaxonReply) {}
+	rpc ReferenceByVerb (TaxonRequest) returns (TaxonReply) {}
+
+    rpc AllRanks (RanksRequest) returns (RanksReply) {}
+}
+
+message TaxonRequest {
+    uint32 id = 1;
+	string vernacular_name = 2;
+	string name = 3;
+	string full_name = 4;
+	bool ignore_punctuation = 5;
+}
+
+message TaxonsRequest {
+    repeated uint32 ids = 1;
+}
+
+message TaxonClassificationRequest {
+    uint32 id = 1;
+    uint32 depth = 2;
+}
+
+message TaxonsReply {
+    repeated TaxonReply taxons = 1;
+}
+
+message TaxonReply {
+    uint32 id = 1;
+    repeated string vernacular_names = 2;
+    string name = 3;
+    string author = 4;
+    string first_level_vernacular_group = 5;
+    string second_level_vernacular_group = 6;
+    RankReply rank = 7;
+    uint32 reference_id = 8;
+    TaxonReply parent = 9;
+}
+
+message RankRequest {
+    string key = 1;
+}
+
+message RankReply {
+    uint32 id = 1;
+    string key = 2;
+    string name = 3;
+    uint32 order = 4;
+}
+
+message RanksRequest {}
+
+message RanksReply {
+    repeated RankReply ranks = 1;
+}

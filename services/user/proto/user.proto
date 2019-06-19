@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package user;
+
+
+service User {
+    rpc Login (LoginRequest) returns (UserReply) {}
+    rpc Logout (LogoutRequest) returns (UserReply) {}
+
+	rpc CheckAuthentication (CheckRequest) returns (CheckReply) {}
+}
+
+message LoginRequest {
+    string login = 1;
+    string password = 2;
+}
+
+message LogoutRequest {
+    uint32 nop = 1;
+}
+
+message CheckRequest {
+    string token = 1;
+}
+
+message CheckReply {
+    bool success = 1;
+}
+
+message UserReply {
+    bool success = 1;
+    string token = 2;
+}

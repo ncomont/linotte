@@ -1,0 +1,23 @@
+version: "2"
+
+services:
+  ingest:
+    image: ubuntu:16.04
+    container_name: linotte-ingest
+    restart: on-failure
+    volumes:
+      - ./volumes/common:/common:ro
+      - ./volumes/ingest:/volume:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - DB_USER=linotte
+      - DB_PASSWORD=l1n0tt3passwd
+      - DB_DBNAME=linotte
+    command: bash -c "./common/linotte ingest -datasets user,taxref,redlist,searchengine && ./common/linotte executejobs -batch redlist"
+    networks:
+      - linotte-network
+
+networks:
+    linotte-network:
+        external:
+            name: linotte-network
